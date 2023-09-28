@@ -1,0 +1,228 @@
+#include <iostream>
+#include <bits/stdc++.h>
+using namespace std;
+vector<string> station_name;
+map<string,vector<pair<string,int>>> edges;
+map<string,int> dist;
+map<string,string> parent;
+void show_path()
+{
+    string source;
+    string destination;
+    cout<<"Enter source: ";
+    getline(cin,source);
+    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    cout<<endl;
+    cout<<"Enter destination: ";
+    getline(cin,destination);
+    for(int i=0;i<station_name.size();i++){
+       dist[station_name[i]]=1e9;
+       parent[station_name[i]]=station_name[i];
+    }
+    priority_queue<pair<int,string> ,vector<pair<int,string>>,greater<pair<int,string>>> pq;
+    dist[source]=0;
+    pq.push({0,source});
+    while(!pq.empty())
+    {
+        pair<int,string> temp=pq.top();
+        pq.pop();
+       int wt=temp.first;
+        string node=temp.second;
+        vector<pair<string,int>> v=edges[node];
+        for(int i=0;i<v.size();i++)
+        {
+            string adj_node=v[i].first;
+            int edge_wt=v[i].second;
+            if(edge_wt+wt<dist[adj_node])
+            {
+                dist[adj_node]=edge_wt+wt;
+                pq.push({dist[adj_node],adj_node});
+                parent[adj_node]=node;
+            }
+        }
+    }
+    vector<string> path;
+    string node=parent[destination];
+    string des=destination;
+    while(parent[des]!=des)
+    {
+        path.push_back(des);
+        des=parent[des];
+    }
+    if(parent[des]==source){
+       path.push_back(source);
+       reverse(path.begin(),path.end());
+       for(int i=0;i<path.size()-1;i++)
+       {
+           cout<<path[i]<<" => ";
+       }
+       cout<<path[path.size()-1];
+    }
+    else
+       cout<<"path does not exixt";
+    cout<<endl<<endl;
+    cout<<"******************************************************************************"<<endl<<endl;
+}
+void shortest_distance()
+{
+    string source;
+    string destination;
+    cout<<"Enter source: ";
+    getline(cin,source);
+    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    cout<<endl;
+    cout<<"Enter destination: ";
+    getline(cin,destination);
+    for(int i=0;i<station_name.size();i++){
+       dist[station_name[i]]=1e9;
+    }
+    priority_queue<pair<int,string> ,vector<pair<int,string>>,greater<pair<int,string>>> pq;
+    dist[source]=0;
+    pq.push({0,source});
+    while(!pq.empty())
+    {
+        pair<int,string> temp=pq.top();
+        pq.pop();
+       int wt=temp.first;
+        string node=temp.second;
+        vector<pair<string,int>> v=edges[node];
+        for(int i=0;i<v.size();i++)
+        {
+            string adj_node=v[i].first;
+            int edge_wt=v[i].second;
+            if(edge_wt+wt<dist[adj_node])
+            {
+                dist[adj_node]=edge_wt+wt;
+                pq.push({dist[adj_node],adj_node});
+                parent[adj_node]=node;
+            }
+        }
+    }
+    if(dist.find(destination)==dist.end() || dist[destination]==1e9)
+       cout<<"Their is no path from "<<source<<" to "<<destination<<endl<<endl;
+    else{
+     if(dist.find(destination)!=dist.end())
+        cout<<"Shortest path frome "<<source<<" to "<<destination<<"  is "<<dist[destination];
+    }
+    cout<<endl<<endl;
+    cout<<"******************************************************************************"<<endl<<endl;
+}
+void station_list()
+{
+    cout<<"List of Station"<<endl;
+    cout<<endl;
+    for(int i=0;i<station_name.size();i++)
+    {
+        cout<<"   "<<station_name[i];
+        cout<<endl;
+    }
+    cout<<endl;
+    cout<<"*******************************************************************************"<<endl<<endl;
+}
+void addEdge(string source,string destination,int distance)
+{
+    edges[source].push_back({destination,distance});
+    edges[destination].push_back({source,distance});
+}
+void show_map()
+{
+    cout<<"MAP OF METRO:"<<endl;
+    cout<<endl;
+    for(auto it:edges)
+    {
+        cout<<it.first<<"  "<<"=>";
+        cout<<endl;
+        vector<pair<string,int>> temp=it.second;
+        for(int i=0;i<temp.size();i++)
+        {
+            cout<<"     "<<"*"<<temp[i].first<<" = "<<temp[i].second;
+            cout<<endl;
+        }
+        cout<<endl;
+    }
+    cout<<endl;
+    cout<<"*******************************************************************************"<<endl;
+}
+int main()
+{
+    station_name.push_back("Noida_Sector_62~B");
+	station_name.push_back("Botanical_Garden~B");
+	station_name.push_back("Yamuna_Bank~B");
+	station_name.push_back("Rajiv_Chowk~BY");
+	station_name.push_back("Vaishali~B");
+    station_name.push_back("Moti_Nagar~B");
+	station_name.push_back("Janak_Puri_West~BO");
+	station_name.push_back("Dwarka_Sector_21~B");
+	station_name.push_back("Huda_City_Center~Y");
+	station_name.push_back("Saket~Y");
+	station_name.push_back("Vishwavidyalaya~Y");
+	station_name.push_back("Chandni_Chowk~Y");
+	station_name.push_back("New_Delhi~YO");
+	station_name.push_back("AIIMS~Y");
+	station_name.push_back("Shivaji_Stadium~O");
+	station_name.push_back("DDS_Campus~O");
+	station_name.push_back("IGI_Airport~O");
+	station_name.push_back("Rajouri_Garden~BP");
+	station_name.push_back("Netaji_Subhash_Place~PR");
+	station_name.push_back("Punjabi_Bagh_West~P");
+	
+	
+	addEdge("Noida_Sector_62~B", "Botanical_Garden~B", 8);
+	addEdge("Botanical_Garden~B", "Yamuna_Bank~B", 10);
+	addEdge("Yamuna_Bank~B", "Vaishali~B", 8);
+	addEdge("Yamuna_Bank~B", "Rajiv_Chowk~BY", 6);
+	addEdge("Rajiv_Chowk~BY", "Moti_Nagar~B", 9);
+	addEdge("Moti_Nagar~B", "Janak_Puri_West~BO", 7);
+	addEdge("Janak_Puri_West~BO", "Dwarka_Sector_21~B", 6);
+	addEdge("Huda_City_Center~Y", "Saket~Y", 15);
+	addEdge("Saket~Y", "AIIMS~Y", 6);
+	addEdge("AIIMS~Y", "Rajiv_Chowk~BY", 7);
+	addEdge("Rajiv_Chowk~BY", "New_Delhi~YO", 1);
+	addEdge("New_Delhi~YO", "Chandni_Chowk~Y", 2);
+	addEdge("Chandni_Chowk~Y", "Vishwavidyalaya~Y", 5);
+	addEdge("New_Delhi~YO", "Shivaji_Stadium~O", 2);
+	addEdge("Shivaji_Stadium~O", "DDS_Campus~O", 7);
+	addEdge("DDS_Campus~O", "IGI_Airport~O", 8);
+	addEdge("Moti_Nagar~B", "Rajouri_Garden~BP", 2);
+	addEdge("Punjabi_Bagh_West~P", "Rajouri_Garden~BP", 2);
+	addEdge("Punjabi_Bagh_West~P", "Netaji_Subhash_Place~PR", 3);
+	addEdge("AIIMS~Y","New_Delhi~YO",10);
+	while(true)
+    {
+        cout<<"                  ** Welcome to Metro app **                    "<<endl;
+        cout<<"                     ** list of actions **                     "<<endl;
+        cout<<endl;
+        cout<<"1.List all the stations in the map"<<endl;
+        cout<<"2.Show the metro map"<<endl;
+        cout<<"3.Get shortest distance from a 'source' station to 'destination' station"<<endl;
+        cout<<"4.Get shortest path (distance wise)  to reach from a 'source' station to 'destination' station"<<endl;
+        cout<<"5.Exit"<<endl<<endl;
+        cout<<"Enter your choice from the above list (1 to 5) :";
+        int temp;
+        cin>>temp;
+        cin.ignore();
+        int exit=0;
+        switch(temp)
+        {
+            case 1:
+                  station_list();
+                  break;
+            case 2:
+                  show_map();
+                  break;
+            case 3:
+                  shortest_distance();
+                  break;
+            case 4:
+                show_path();
+                break;
+            case 5:
+               exit=1;
+               break;
+            default :
+               cout<<"Please make a valid choice"<<endl;
+        }
+        if(exit==1)
+           break;
+    }
+}
